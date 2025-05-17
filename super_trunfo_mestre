@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <string.h>
+
+typedef struct {
+    char nome_pais[50];
+    int populacao;
+    float area;
+    float pib;
+    int pontos_turisticos;
+    float densidade;
+} Carta;
+
+void calcular_densidade(Carta *c) {
+    c->densidade = (c->area != 0) ? c->populacao / c->area : 0;
+}
+
+float obter_valor(Carta c, int atributo) {
+    switch (atributo) {
+        case 1: return (float)c.populacao;
+        case 2: return c.area;
+        case 3: return c.pib;
+        case 4: return (float)c.pontos_turisticos;
+        case 5: return c.densidade;
+        default: return 0;
+    }
+}
+
+const char* nome_atributo(int atributo) {
+    switch (atributo) {
+        case 1: return "População";
+        case 2: return "Área";
+        case 3: return "PIB";
+        case 4: return "Pontos Turísticos";
+        case 5: return "Densidade Demográfica";
+        default: return "Desconhecido";
+    }
+}
+
+int main() {
+    // Cartas pré-definidas
+    Carta carta1 = {"Brasil", 214000000, 8516000.0, 16000.0, 120, 0};
+    Carta carta2 = {"Canadá", 38000000, 9985000.0, 20000.0, 80, 0};
+
+    calcular_densidade(&carta1);
+    calcular_densidade(&carta2);
+
+    int escolha1 = 0, escolha2 = 0;
+
+    printf("Escolha o primeiro atributo para comparação:\n");
+    printf("1 - População\n2 - Área\n3 - PIB\n4 - Pontos Turísticos\n5 - Densidade Demográfica\nOpção: ");
+    scanf("%d", &escolha1);
+
+    if (escolha1 < 1 || escolha1 > 5) {
+        printf("Atributo inválido!\n");
+        return 1;
+    }
+
+    printf("\nEscolha o segundo atributo para comparação (diferente do primeiro):\n");
+    for (int i = 1; i <= 5; i++) {
+        if (i != escolha1) {
+            printf("%d - %s\n", i, nome_atributo(i));
+        }
+    }
+    printf("Opção: ");
+    scanf("%d", &escolha2);
+
+    if (escolha2 < 1 || escolha2 > 5 || escolha2 == escolha1) {
+        printf("Atributo inválido ou repetido!\n");
+        return 1;
+    }
+
+    float valor1_attr1 = obter_valor(carta1, escolha1);
+    float valor2_attr1 = obter_valor(carta2, escolha1);
+    float valor1_attr2 = obter_valor(carta1, escolha2);
+    float valor2_attr2 = obter_valor(carta2, escolha2);
+
+    int vencedor_attr1 = (escolha1 == 5) ? (valor1_attr1 < valor2_attr1 ? 1 : (valor2_attr1 < valor1_attr1 ? 2 : 0))
+                                         : (valor1_attr1 > valor2_attr1 ? 1 : (valor2_attr1 > valor1_attr1 ? 2 : 0));
+
+    int vencedor_attr2 = (escolha2 == 5) ? (valor1_attr2 < valor2_attr2 ? 1 : (valor2_attr2 < valor1_attr2 ? 2 : 0))
+                                         : (valor1_attr2 > valor2_attr2 ? 1 : (valor2_attr2 > valor1_attr2 ? 2 : 0));
+
+    float soma1 = valor1_attr1 + valor1_attr2;
+    float soma2 = valor2_attr1 + valor2_attr2;
+    int vencedor_total = (soma1 > soma2) ? 1 : (soma2 > soma1 ? 2 : 0);
+
+    printf("\nComparação de Cartas:\n");
+    printf("Carta 1 - %s:\n", carta1.nome_pais);
+    printf(" - %s: %.2f\n", nome_atributo(escolha1), valor1_attr1);
+    printf(" - %s: %.2f\n", nome_atributo(escolha2), valor1_attr2);
+    printf(" - Soma: %.2f\n\n", soma1);
+
+    printf("Carta 2 - %s:\n", carta2.nome_pais);
+    printf(" - %s: %.2f\n", nome_atributo(escolha1), valor2_attr1);
+    printf(" - %s: %.2f\n", nome_atributo(escolha2), valor2_attr2);
+    printf(" - Soma: %.2f\n\n", soma2);
+
+    if (vencedor_total == 1)
+        printf("Resultado: Carta 1 (%s) venceu!\n", carta1.nome_pais);
+    else if (vencedor_total == 2)
+        printf("Resultado: Carta 2 (%s) venceu!\n", carta2.nome_pais);
+    else
+        printf("Resultado: Empate!\n");
+
+    return 0;
+}
